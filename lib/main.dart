@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'great_places.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,31 +17,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: false,
         colorScheme: ColorScheme.fromSwatch().copyWith(
-          secondary: Colors.deepOrange,
+          primary: Colors.indigo,
+          secondary: Colors.amber,
         ),
       ),
-      home: const MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Material App 2'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {},
-          child: const Text('Go to Second Screen'),
-        ),
-      ),
+      home: const PlacesListPage(),
+      routes: {
+        AppRoutes.place_form: (ctx) => const PlaceFormPage(),
+      },
     );
   }
 }
