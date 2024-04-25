@@ -19,8 +19,10 @@ class PlacesListPage extends StatelessWidget {
           ),
         ],
       ),
-      body: const Center(
-        child: CircularProgressIndicator.adaptive(),
+      body: Center(
+        child: CircularProgressIndicator.adaptive(
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+        ),
       ),
     );
   }
