@@ -1,6 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 import '../great_places.dart';
 
@@ -13,8 +15,24 @@ class PlaceFormPage extends StatefulWidget {
 
 class _PlacesFormPageState extends State<PlaceFormPage> {
   final _titleController = TextEditingController();
+  File? _pickedImage;
 
-  void _submitForm() {}
+  void selectImage(File pickedImage) {
+    _pickedImage = pickedImage;
+  }
+
+  void _submitForm() {
+    if (_titleController.text.isEmpty || _pickedImage == null) {
+      return;
+    }
+
+    Provider.of<GreatPlaces>(context, listen: false).addPlace(
+      _titleController.text,
+      _pickedImage!,
+    );
+
+    Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +42,6 @@ class _PlacesFormPageState extends State<PlaceFormPage> {
       ),
       body: Column(
         children: [
-          // ignore: prefer_const_constructors
           Expanded(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -41,7 +58,9 @@ class _PlacesFormPageState extends State<PlaceFormPage> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    const ImageInput(),
+                    ImageInput(
+                      onSelectImage: selectImage,
+                    ),
                   ],
                 ),
               ),

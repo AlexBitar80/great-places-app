@@ -1,13 +1,47 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart' as syspaths;
 
 class ImageInput extends StatefulWidget {
-  const ImageInput({super.key});
+  final Function onSelectImage;
+
+  const ImageInput({
+    super.key,
+    required this.onSelectImage,
+  });
 
   @override
   State<ImageInput> createState() => _ImageInputState();
 }
 
 class _ImageInputState extends State<ImageInput> {
+  File? _storedImage;
+
+  _takePicture({required ImageSource source}) async {
+    final ImagePicker picker = ImagePicker();
+    XFile imageFile = await picker.pickImage(
+      source: source,
+      maxWidth: 600,
+    ) as XFile;
+
+    setState(() {
+      _storedImage = File(imageFile.path);
+    });
+
+    final appDir = await syspaths.getApplicationDocumentsDirectory();
+
+    String fileName = path.basename(_storedImage!.path);
+    final savedImage = await _storedImage!.copy(
+      '${appDir.path}/$fileName',
+    );
+
+    widget.onSelectImage(savedImage);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -21,15 +55,23 @@ class _ImageInputState extends State<ImageInput> {
                 color: Colors.grey,
               ),
             ),
-            child: const Center(
-              child: Text('Nenhuma imagem!'),
+            child: Center(
+              child: _storedImage != null
+                  ? Image.file(
+                      _storedImage!,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    )
+                  : const Text('Nenhuma imagem!'),
             ),
           ),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: TextButton.icon(
-            onPressed: () {},
+            onPressed: () => _takePicture(
+              source: ImageSource.gallery,
+            ),
             icon: const Icon(Icons.camera),
             label: const Text('Tirar foto'),
           ),
