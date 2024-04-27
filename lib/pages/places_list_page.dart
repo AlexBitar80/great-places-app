@@ -22,35 +22,43 @@ class PlacesListPage extends StatelessWidget {
           ),
         ],
       ),
-      body: Consumer<GreatPlaces>(
-        child: const Center(
-          child: Text('Nenhum local cadastrado!'),
-        ),
-        builder: (ctx, greatPlaces, ch) => greatPlaces.itemCount == 0
-            ? ch ?? const Text('Nenhum local cadastrado!')
-            : ListView.separated(
-                itemCount: greatPlaces.itemCount,
-                itemBuilder: (ctx, i) => ListTile(
-                  leading: SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: CircleAvatar(
-                      backgroundImage: FileImage(
-                        greatPlaces.itemByIndex(i).image,
-                      ),
-                    ),
-                  ),
-                  title: Text(
-                    greatPlaces.items[i].title,
-                  ),
-                  onTap: () {},
+      body: FutureBuilder(
+        future: Provider.of<GreatPlaces>(context, listen: false).loadPlaces(),
+        builder: (ctx, snapshot) => snapshot.connectionState ==
+                ConnectionState.waiting
+            ? const Center(
+                child: CircularProgressIndicator.adaptive(),
+              )
+            : Consumer<GreatPlaces>(
+                child: const Center(
+                  child: Text('Nenhum local cadastrado!'),
                 ),
-                separatorBuilder: (BuildContext context, int index) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Divider(),
-                  );
-                },
+                builder: (ctx, greatPlaces, ch) => greatPlaces.itemCount == 0
+                    ? ch ?? const Text('Nenhum local cadastrado!')
+                    : ListView.separated(
+                        itemCount: greatPlaces.itemCount,
+                        itemBuilder: (ctx, i) => ListTile(
+                          leading: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: CircleAvatar(
+                              backgroundImage: FileImage(
+                                greatPlaces.itemByIndex(i).image,
+                              ),
+                            ),
+                          ),
+                          title: Text(
+                            greatPlaces.items[i].title,
+                          ),
+                          onTap: () {},
+                        ),
+                        separatorBuilder: (BuildContext context, int index) {
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: Divider(),
+                          );
+                        },
+                      ),
               ),
       ),
     );
