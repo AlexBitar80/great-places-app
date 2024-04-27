@@ -1,11 +1,9 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-
 import '../great_places.dart';
 
 class GreatPlaces with ChangeNotifier {
-  final List<Place> _items = [];
+  List<Place> _items = [];
 
   List<Place> get items {
     return [..._items];
@@ -17,6 +15,21 @@ class GreatPlaces with ChangeNotifier {
 
   Place itemByIndex(int index) {
     return _items[index];
+  }
+
+  Future<void> loadPlaces() async {
+    final dataList = await DbUtil.getData('places');
+    _items = dataList
+        .map(
+          (item) => Place(
+            id: item['id'],
+            title: item['title'],
+            image: File(item['image']),
+            location: null,
+          ),
+        )
+        .toList();
+    notifyListeners();
   }
 
   void addPlace(String title, File image) {
@@ -32,6 +45,13 @@ class GreatPlaces with ChangeNotifier {
     );
 
     _items.add(newPlace);
+
+    DbUtil.insert('places', {
+      'id': newPlace.id,
+      'title': newPlace.title,
+      'image': newPlace.image.path,
+    });
+
     notifyListeners();
   }
 }
