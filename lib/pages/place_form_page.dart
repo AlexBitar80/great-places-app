@@ -61,6 +61,8 @@ class _PlacesFormPageState extends State<PlaceFormPage> {
                     ImageInput(
                       onSelectImage: selectImage,
                     ),
+                    const SizedBox(height: 10),
+                    const LocationInput(),
                   ],
                 ),
               ),
