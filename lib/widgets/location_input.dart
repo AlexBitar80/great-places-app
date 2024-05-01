@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import 'package:location/location.dart';
+
+import '../great_places.dart';
 
 class LocationInput extends StatefulWidget {
   const LocationInput({super.key});
@@ -9,6 +14,22 @@ class LocationInput extends StatefulWidget {
 
 class _LocationInputState extends State<LocationInput> {
   String? previewImageUrl;
+
+  final apiKey = dotenv.env['GOOGLE_API_KEY']!;
+
+  Future<void> _getCurrentUserLocation() async {
+    final locationData = await Location().getLocation();
+
+    final staticMapImageUrl = LocationUtil.generateLocationPreviewImage(
+      latitude: locationData.latitude ?? 0.0,
+      longitude: locationData.longitude ?? 0.0,
+      apiKey: apiKey,
+    );
+
+    setState(() {
+      previewImageUrl = staticMapImageUrl;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +46,7 @@ class _LocationInputState extends State<LocationInput> {
             ),
           ),
           child: previewImageUrl == null
-              ? const Text('No Location Chosen')
+              ? const Text('Localização não informada.')
               : Image.network(
                   previewImageUrl ?? '',
                   fit: BoxFit.cover,
@@ -36,13 +57,13 @@ class _LocationInputState extends State<LocationInput> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             TextButton(
+              onPressed: _getCurrentUserLocation,
               child: const Row(
                 children: [
                   Icon(Icons.location_on),
                   Text('Localização Atual'),
                 ],
               ),
-              onPressed: () {},
             ),
             TextButton(
               child: const Row(
