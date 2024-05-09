@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:location/location.dart';
 
@@ -29,6 +30,20 @@ class _LocationInputState extends State<LocationInput> {
     setState(() {
       previewImageUrl = staticMapImageUrl;
     });
+  }
+
+  Future<void> selectOnMap() async {
+    final LatLng selectedLocation = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const MapPage(),
+      ),
+    );
+
+    // if (selectedLocation) {
+    //   return;
+    // }
+
+    print(selectedLocation.latitude);
   }
 
   @override
@@ -66,13 +81,13 @@ class _LocationInputState extends State<LocationInput> {
               ),
             ),
             TextButton(
+              onPressed: selectOnMap,
               child: const Row(
                 children: [
                   Icon(Icons.map),
                   Text('Selecionar no Mapa'),
                 ],
               ),
-              onPressed: () {},
             ),
           ],
         ),
