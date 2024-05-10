@@ -1,8 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../great_places.dart';
 
 class GreatPlaces with ChangeNotifier {
+  final apiKey = dotenv.env['GOOGLE_API_KEY']!;
+
   List<Place> _items = [];
 
   List<Place> get items {
@@ -25,22 +29,28 @@ class GreatPlaces with ChangeNotifier {
             id: item['id'],
             title: item['title'],
             image: File(item['image']),
-            location: null,
+            location: PlaceLocation(
+              latitude: item['latitude'],
+              longitude: item['longitude'],
+              address: item['address'],
+            ),
           ),
         )
         .toList();
     notifyListeners();
   }
 
-  void addPlace(String title, File image) {
+  void addPlace(String title, File image, LatLng position) async {
+    final String address = await LocationUtil.getAddressFrom(position, apiKey);
+
     final newPlace = Place(
       id: DateTime.now().toString(),
       title: title,
       image: image,
       location: PlaceLocation(
-        latitude: 0,
-        longitude: 0,
-        address: null,
+        latitude: position.latitude,
+        longitude: position.longitude,
+        address: address,
       ),
     );
 
@@ -50,6 +60,9 @@ class GreatPlaces with ChangeNotifier {
       'id': newPlace.id,
       'title': newPlace.title,
       'image': newPlace.image.path,
+      'latitude': position.latitude,
+      'longitude': position.longitude,
+      'address': address,
     });
 
     notifyListeners();

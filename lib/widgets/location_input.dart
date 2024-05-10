@@ -7,7 +7,12 @@ import 'package:location/location.dart';
 import '../great_places.dart';
 
 class LocationInput extends StatefulWidget {
-  const LocationInput({super.key});
+  final Function onSelectPosition;
+
+  const LocationInput({
+    super.key,
+    required this.onSelectPosition,
+  });
 
   @override
   State<LocationInput> createState() => _LocationInputState();
@@ -18,18 +23,36 @@ class _LocationInputState extends State<LocationInput> {
 
   final apiKey = dotenv.env['GOOGLE_API_KEY']!;
 
-  Future<void> _getCurrentUserLocation() async {
-    final locationData = await Location().getLocation();
-
+  void _showPreview(double latitude, double longitude) {
     final staticMapImageUrl = LocationUtil.generateLocationPreviewImage(
-      latitude: locationData.latitude ?? 0.0,
-      longitude: locationData.longitude ?? 0.0,
+      latitude: latitude,
+      longitude: longitude,
       apiKey: apiKey,
     );
 
     setState(() {
       previewImageUrl = staticMapImageUrl;
     });
+  }
+
+  Future<void> _getCurrentUserLocation() async {
+    try {
+      final locationData = await Location().getLocation();
+
+      _showPreview(
+        locationData.latitude ?? 0,
+        locationData.longitude ?? 0,
+      );
+
+      widget.onSelectPosition(
+        LatLng(
+          locationData.latitude ?? 0,
+          locationData.longitude ?? 0,
+        ),
+      );
+    } catch (error) {
+      return;
+    }
   }
 
   Future<void> selectOnMap() async {
@@ -39,11 +62,12 @@ class _LocationInputState extends State<LocationInput> {
       ),
     );
 
-    // if (selectedLocation) {
-    //   return;
-    // }
+    _showPreview(
+      selectedLocation.latitude,
+      selectedLocation.longitude,
+    );
 
-    print(selectedLocation.latitude);
+    widget.onSelectPosition(selectedLocation);
   }
 
   @override

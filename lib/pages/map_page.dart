@@ -46,6 +46,7 @@ class _MapPageState extends State<MapPage> {
         ],
       ),
       body: GoogleMap(
+        myLocationEnabled: true,
         initialCameraPosition: CameraPosition(
           target: LatLng(
             widget.initialLocation.latitude,

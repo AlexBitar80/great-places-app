@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../great_places.dart';
@@ -16,19 +17,33 @@ class PlaceFormPage extends StatefulWidget {
 class _PlacesFormPageState extends State<PlaceFormPage> {
   final _titleController = TextEditingController();
   File? _pickedImage;
+  late LatLng? _pickedPosition;
+
+  bool isValidForm() {
+    return _titleController.text.isNotEmpty &&
+        _pickedImage != null &&
+        _pickedPosition != null;
+  }
 
   void selectImage(File pickedImage) {
-    _pickedImage = pickedImage;
+    setState(() {
+      _pickedImage = pickedImage;
+    });
+  }
+
+  void selectPosition(LatLng position) {
+    setState(() {
+      _pickedPosition = position;
+    });
   }
 
   void _submitForm() {
-    if (_titleController.text.isEmpty || _pickedImage == null) {
-      return;
-    }
+    if (!isValidForm()) return;
 
     Provider.of<GreatPlaces>(context, listen: false).addPlace(
       _titleController.text,
       _pickedImage!,
+      _pickedPosition!,
     );
 
     Navigator.of(context).pop();
@@ -62,7 +77,9 @@ class _PlacesFormPageState extends State<PlaceFormPage> {
                       onSelectImage: selectImage,
                     ),
                     const SizedBox(height: 10),
-                    const LocationInput(),
+                    LocationInput(
+                      onSelectPosition: selectPosition,
+                    ),
                   ],
                 ),
               ),
@@ -85,7 +102,9 @@ class _PlacesFormPageState extends State<PlaceFormPage> {
                     Text('Adicionar lugar'),
                   ],
                 ),
-                onPressed: () => _submitForm(),
+                onPressed: () {
+                  isValidForm() ? _submitForm() : null;
+                },
               ),
             ),
           )

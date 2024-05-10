@@ -50,6 +50,10 @@ class PlacesListPage extends StatelessWidget {
                           title: Text(
                             greatPlaces.items[i].title,
                           ),
+                          subtitle: Text(
+                            greatPlaces.items[i].location?.address ??
+                                'Endereço desconhecido',
+                          ),
                           onTap: () {},
                         ),
                         separatorBuilder: (BuildContext context, int index) {
