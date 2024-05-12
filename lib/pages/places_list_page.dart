@@ -17,7 +17,7 @@ class PlacesListPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              Navigator.of(context).pushNamed(AppRoutes.place_form);
+              Navigator.of(context).pushNamed(AppRoutes.placeForm);
             },
           ),
         ],
@@ -54,7 +54,12 @@ class PlacesListPage extends StatelessWidget {
                             greatPlaces.items[i].location?.address ??
                                 'Endereço desconhecido',
                           ),
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.of(context).pushNamed(
+                              AppRoutes.placeDetail,
+                              arguments: greatPlaces.itemByIndex(i),
+                            );
+                          },
                         ),
                         separatorBuilder: (BuildContext context, int index) {
                           return const Padding(

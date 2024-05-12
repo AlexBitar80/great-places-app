@@ -5,10 +5,16 @@ import 'package:great_places/models/place.dart';
 class MapPage extends StatefulWidget {
   final PlaceLocation initialLocation;
   final bool isReadOnly;
+  final bool myLocationEnabled;
+  final bool myLocationButtonEnabled;
+  final String title;
 
   const MapPage({
     super.key,
     this.isReadOnly = false,
+    this.myLocationEnabled = true,
+    this.title = 'Selecione...',
+    this.myLocationButtonEnabled = true,
     this.initialLocation = const PlaceLocation(
       latitude: 37.334606,
       longitude: -122.009102,
@@ -32,7 +38,7 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Selecione...'),
+        title: Text(widget.title),
         actions: [
           if (!widget.isReadOnly)
             IconButton(
@@ -46,7 +52,9 @@ class _MapPageState extends State<MapPage> {
         ],
       ),
       body: GoogleMap(
-        myLocationEnabled: true,
+        padding: const EdgeInsets.all(20),
+        myLocationButtonEnabled: widget.myLocationEnabled,
+        myLocationEnabled: widget.myLocationEnabled,
         initialCameraPosition: CameraPosition(
           target: LatLng(
             widget.initialLocation.latitude,
@@ -55,12 +63,13 @@ class _MapPageState extends State<MapPage> {
           zoom: 13,
         ),
         onTap: widget.isReadOnly ? null : _selectLocation,
-        markers: _pickedPosition == null
+        markers: (_pickedPosition == null && !widget.isReadOnly)
             ? {}
             : {
                 Marker(
                   markerId: const MarkerId('m1'),
-                  position: _pickedPosition!,
+                  position:
+                      _pickedPosition ?? widget.initialLocation.toLatLng(),
                 ),
               },
       ),
